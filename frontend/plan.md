@@ -124,8 +124,10 @@ Flask app.py  ──── db.py ──── mysql-connector ──── MySQL
 | 3 | Admin credentials hardcoded (`admin` / `admin123`) | DB-based admin table | Prototype only |
 | 4 | Jinja2 templates (server-side render) | JS fetch + JSON API | Simpler for pure HTML prototype |
 | 5 | Single `style.css` | Per-page CSS | Maintainability for a small project |
-| 6 | Seat number auto-generated (e.g., "A1", "A2"…) | User picks from grid | Scope reduction for prototype |
-| 7 | Payment auto-set to "Pending" on booking | Full payment gateway | Prototype only |
+| 6 | Seat picker grid — user clicks an available seat | Auto-assign, manual text input | Visual, intuitive for prototype |
+| 7 | Cancel booking = DELETE from BOOKING (cascades to PAYMENT) | Status flag | Simpler; schema has ON DELETE CASCADE |
+| 8 | Admin full CRUD: Routes, Transports, Schedules, Stations | View-only | User confirmed full management needed |
+| 9 | Payment auto-set to "Pending" on booking | Full payment gateway | Prototype only |
 
 ---
 
