@@ -4,6 +4,7 @@ __pycache__/
 *.pyo
 *.pyd
 .env
+frontend/config.py
 
 # Flask
 instance/
@@ -12,3 +13,5 @@ instance/
 .vscode/
 .idea/
 *.swp
+
+*.venv
