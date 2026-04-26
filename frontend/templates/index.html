@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Home — Transport Enquiry System{% endblock %}
+{% block content %}
+
+<div style="text-align:center; padding: 2.5rem 1rem 1rem;">
+  <div style="font-size:3rem; margin-bottom:.5rem;">🚌</div>
+  <h1 style="font-size:2rem; color:var(--blue); margin-bottom:.5rem;">Transport Enquiry System</h1>
+  <p style="color:var(--gray); margin-bottom:2.5rem; font-size:1rem;">
+    Book tickets, check schedules, and manage transport — all in one place.
+  </p>
+</div>
+
+<div class="portal-grid">
+  <div class="portal-card">
+    <div class="icon">🧑‍💼</div>
+    <h2>User Portal</h2>
+    <p>Register or log in with your email to browse routes, book seats, and track your journeys.</p>
+    <a href="{{ url_for('user_login') }}" class="btn btn-primary btn-full">Enter User Portal</a>
+  </div>
+  <div class="portal-card admin">
+    <div class="icon">🛠️</div>
+    <h2>Admin Portal</h2>
+    <p>Manage routes, schedules, transports, and view all bookings and payment records.</p>
+    <a href="{{ url_for('admin_login') }}" class="btn btn-orange btn-full">Enter Admin Portal</a>
+  </div>
+</div>
+
+<p style="text-align:center; color:var(--gray); font-size:.8rem; margin-top:3rem;">
+  21CSC205P Database Management Systems &mdash; SRM Institute of Science and Technology
+</p>
+{% endblock %}
