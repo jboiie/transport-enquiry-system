@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Browse Routes — Transport Enquiry{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>🗺️ Browse Routes &amp; Schedules</h1>
+  <p>Find a journey and book your seat.</p>
+</div>
+
+<div class="card">
+  <h2>Filter Schedules</h2>
+  <form method="GET" action="{{ url_for('user_routes') }}">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="source">From</label>
+        <select id="source" name="source">
+          <option value="">-- Any --</option>
+          {% for s in sources %}
+            <option value="{{ s }}" {% if s == src %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="destination">To</label>
+        <select id="destination" name="destination">
+          <option value="">-- Any --</option>
+          {% for d in destinations %}
+            <option value="{{ d }}" {% if d == dst %}selected{% endif %}>{{ d }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a href="{{ url_for('user_routes') }}" class="btn btn-outline" style="margin-left:.5rem;">Clear</a>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Available Schedules ({{ schedules|length }} found)</h2>
+  {% if schedules %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Route</th><th>Date</th><th>Departure</th><th>Arrival</th>
+          <th>Transport</th><th>Capacity</th><th>Available</th><th>Fare</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in schedules %}
+        {% set available = s.capacity - s.booked %}
+        <tr>
+          <td><strong>{{ s.source }}</strong> → <strong>{{ s.destination }}</strong></td>
+          <td>{{ s.date }}</td>
+          <td>{{ s.departure_time }}</td>
+          <td>{{ s.arrival_time }}</td>
+          <td>{{ s.transport_type }}</td>
+          <td>{{ s.capacity }}</td>
+          <td>
+            {% if available > 0 %}
+              <span class="badge badge-green">{{ available }} free</span>
+            {% else %}
+              <span class="badge badge-red">Full</span>
+            {% endif %}
+          </td>
+          <td>₹{{ '%.0f'|format(s.distance | float * (2 if s.transport_type == 'Bus' else 1.5)) }}</td>
+          <td>
+            {% if available > 0 %}
+              <a href="{{ url_for('user_book', schedule_id=s.schedule_id) }}" class="btn btn-primary btn-sm">Book</a>
+            {% else %}
+              <span class="text-muted">Full</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-muted">No schedules found. Try adjusting your filters.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

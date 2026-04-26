@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}My Dashboard — Transport Enquiry{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>Welcome, {{ session.user_name }}! 👋</h1>
+  <p>Here's a snapshot of your activity.</p>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-value">{{ booking_count }}</div>
+    <div class="stat-label">Total Bookings</div>
+  </div>
+  <div class="stat-card red">
+    <div class="stat-value">{{ pending_count }}</div>
+    <div class="stat-label">Pending Payments</div>
+  </div>
+  <div class="stat-card orange">
+    <div class="stat-value">{{ enquiry_count }}</div>
+    <div class="stat-label">Enquiries</div>
+  </div>
+</div>
+
+<div class="action-grid" style="margin-bottom:1.5rem;">
+  <div class="action-card">
+    <div class="ac-icon">🗺️</div>
+    <a href="{{ url_for('user_routes') }}">Browse Routes</a>
+    <p class="text-muted mt-1">Find &amp; book a journey</p>
+  </div>
+  <div class="action-card">
+    <div class="ac-icon">🎫</div>
+    <a href="{{ url_for('user_bookings') }}">My Bookings</a>
+    <p class="text-muted mt-1">View or cancel bookings</p>
+  </div>
+  <div class="action-card">
+    <div class="ac-icon">💬</div>
+    <a href="{{ url_for('user_enquiry') }}">Enquiries</a>
+    <p class="text-muted mt-1">Submit or track enquiries</p>
+  </div>
+</div>
+
+{% if recent %}
+<div class="card">
+  <h2>Recent Bookings</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Route</th><th>Travel Date</th><th>Seat</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in recent %}
+        <tr>
+          <td>{{ b.booking_id }}</td>
+          <td>{{ b.source }} → {{ b.destination }}</td>
+          <td>{{ b.date }}</td>
+          <td><strong>{{ b.seat_number }}</strong></td>
+          <td>
+            {% if b.payment_status == 'Completed' %}
+              <span class="badge badge-green">Completed</span>
+            {% elif b.payment_status == 'Pending' %}
+              <span class="badge badge-orange">Pending</span>
+            {% else %}
+              <span class="badge badge-gray">{{ b.payment_status or 'N/A' }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="text-muted" style="margin-top:.75rem;">
+    <a href="{{ url_for('user_bookings') }}">View all bookings →</a>
+  </p>
+</div>
+{% endif %}
+
+{% endblock %}

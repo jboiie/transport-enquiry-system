@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Book Seat — Transport Enquiry{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>🎫 Book Your Seat</h1>
+  <p>{{ schedule.source }} → {{ schedule.destination }} &nbsp;|&nbsp; {{ schedule.date }}</p>
+</div>
+
+<div class="two-col">
+
+  <!-- Left: Schedule Info -->
+  <div class="card">
+    <h2>Journey Details</h2>
+    <table style="width:100%; font-size:.9rem;">
+      <tr><td style="color:var(--gray); padding:.35rem 0;">Route</td>
+          <td><strong>{{ schedule.source }} → {{ schedule.destination }}</strong></td></tr>
+      <tr><td style="color:var(--gray); padding:.35rem 0;">Date</td>
+          <td>{{ schedule.date }}</td></tr>
+      <tr><td style="color:var(--gray); padding:.35rem 0;">Departure</td>
+          <td>{{ schedule.departure_time }}</td></tr>
+      <tr><td style="color:var(--gray); padding:.35rem 0;">Arrival</td>
+          <td>{{ schedule.arrival_time }}</td></tr>
+      <tr><td style="color:var(--gray); padding:.35rem 0;">Transport</td>
+          <td>{{ schedule.transport_type }}</td></tr>
+      <tr><td style="color:var(--gray); padding:.35rem 0;">Distance</td>
+          <td>{{ schedule.distance }} km</td></tr>
+      <tr><td style="color:var(--gray); padding:.35rem 0;">Fare</td>
+          <td><strong style="color:var(--green); font-size:1.1rem;">₹{{ fare }}</strong></td></tr>
+    </table>
+  </div>
+
+  <!-- Right: Booking Form -->
+  <div class="card">
+    <h2>Select Seat &amp; Pay</h2>
+
+    <div class="seat-legend">
+      <span><span class="legend-dot" style="background:var(--green-lt); border:2px solid var(--green);"></span> Available</span>
+      <span><span class="legend-dot" style="background:var(--red-lt); border:2px solid var(--red);"></span> Booked</span>
+      <span><span class="legend-dot" style="background:var(--blue-mid);"></span> Selected</span>
+    </div>
+
+    <div class="seat-grid" id="seatGrid">
+      {% set cols = 10 %}
+      {% for seat in all_seats %}
+        {% if loop.index0 % cols == 0 %}
+          <div class="seat-row-label" style="color:var(--gray); font-size:.72rem; width:100%; margin-top:.3rem;">
+            Row {{ seat[0] }}
+          </div>
+        {% endif %}
+        <div class="seat {% if seat in booked %}booked{% endif %}"
+             id="seat-{{ seat }}"
+             onclick="selectSeat(this, '{{ seat }}')">
+          {{ seat }}
+        </div>
+      {% endfor %}
+    </div>
+
+    <form method="POST" action="{{ url_for('user_book', schedule_id=schedule.schedule_id) }}" id="bookForm">
+      <input type="hidden" name="seat_number" id="seat_number" value="">
+
+      <div class="form-group">
+        <label>Selected Seat</label>
+        <input type="text" id="seat_display" readonly placeholder="Click a seat above"
+               style="background:var(--gray-lt); font-weight:700; font-size:1.1rem;">
+      </div>
+
+      <div class="form-group">
+        <label for="payment_mode">Payment Mode</label>
+        <select name="payment_mode" id="payment_mode" required>
+          <option value="">-- Select --</option>
+          <option value="UPI">UPI</option>
+          <option value="Credit Card">Credit Card</option>
+          <option value="Debit Card">Debit Card</option>
+          <option value="Cash">Cash</option>
+          <option value="Net Banking">Net Banking</option>
+        </select>
+      </div>
+
+      <p class="text-muted mb-1">Total payable: <strong style="color:var(--green);">₹{{ fare }}</strong> (Payment status: Pending)</p>
+      <button type="submit" class="btn btn-green btn-full" id="bookBtn" disabled>Confirm Booking</button>
+    </form>
+  </div>
+</div>
+
+<p class="text-muted"><a href="{{ url_for('user_routes') }}">← Back to Routes</a></p>
+
+<script>
+  const booked = {{ booked | tojson }};
+
+  function selectSeat(el, seat) {
+    if (el.classList.contains('booked')) return;
+    document.querySelectorAll('.seat.selected').forEach(s => s.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('seat_number').value = seat;
+    document.getElementById('seat_display').value = seat;
+    document.getElementById('bookBtn').disabled = false;
+  }
+
+  document.getElementById('bookForm').addEventListener('submit', function(e) {
+    const seat = document.getElementById('seat_number').value;
+    if (!seat) { e.preventDefault(); alert('Please select a seat first.'); }
+  });
+</script>
+{% endblock %}

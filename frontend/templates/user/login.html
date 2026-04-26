@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}User Login — Transport Enquiry{% endblock %}
+{% block content %}
+<div class="login-wrap">
+  <div class="login-box">
+    <div class="login-icon">🧑‍💼</div>
+    <h2>User Portal</h2>
+    <p class="subtitle">Enter your email to continue</p>
+
+    <form method="POST" action="{{ url_for('user_login') }}">
+      <input type="hidden" name="action" value="login">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required
+               value="{{ prefill_email or '' }}" placeholder="you@example.com">
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Continue →</button>
+    </form>
+
+    {% if show_register %}
+    <hr class="divider">
+    <p style="color:var(--gray); font-size:.88rem; margin-bottom:1rem;">
+      📋 No account found. Fill in your details to register:
+    </p>
+    <form method="POST" action="{{ url_for('user_login') }}">
+      <input type="hidden" name="action" value="register">
+      <input type="hidden" name="email" value="{{ prefill_email }}">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="first_name">First Name</label>
+          <input type="text" id="first_name" name="first_name" required placeholder="Rahul">
+        </div>
+        <div class="form-group">
+          <label for="last_name">Last Name</label>
+          <input type="text" id="last_name" name="last_name" required placeholder="Sharma">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" required placeholder="9876543210">
+      </div>
+      <button type="submit" class="btn btn-green btn-full">Create Account &amp; Login</button>
+    </form>
+    {% endif %}
+
+    <p class="text-muted" style="text-align:center; margin-top:1rem;">
+      <a href="{{ url_for('index') }}">← Back to Home</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
