@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Admin Login — Transport Enquiry{% endblock %}
+{% block content %}
+<div class="login-wrap">
+  <div class="login-box">
+    <div class="login-icon">🛠️</div>
+    <h2>Admin Portal</h2>
+    <p class="subtitle">Enter admin credentials</p>
+    <form method="POST" action="{{ url_for('admin_login') }}">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required placeholder="admin">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn btn-orange btn-full">Login as Admin</button>
+    </form>
+    <p class="text-muted" style="text-align:center; margin-top:1rem;">
+      <a href="{{ url_for('index') }}">← Back to Home</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

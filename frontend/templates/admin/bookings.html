@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}All Bookings — Admin{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>🎫 All Bookings</h1>
+  <p>{{ bookings|length }} booking(s) in the system.</p>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    {% if bookings %}
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>User</th><th>Email</th><th>Route</th><th>Date</th>
+          <th>Seat</th><th>Booked On</th><th>Fare</th><th>Mode</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in bookings %}
+        <tr>
+          <td>{{ b.booking_id }}</td>
+          <td>{{ b.first_name }} {{ b.last_name }}</td>
+          <td>{{ b.email }}</td>
+          <td>{{ b.source }} → {{ b.destination }}</td>
+          <td>{{ b.date }}</td>
+          <td><strong>{{ b.seat_number }}</strong></td>
+          <td>{{ b.booking_date }}</td>
+          <td>{{ '₹%.2f'|format(b.amount) if b.amount else '—' }}</td>
+          <td>{{ b.payment_mode or '—' }}</td>
+          <td>
+            {% if b.payment_status == 'Completed' %}
+              <span class="badge badge-green">Completed</span>
+            {% elif b.payment_status == 'Pending' %}
+              <span class="badge badge-orange">Pending</span>
+            {% else %}
+              <span class="badge badge-gray">{{ b.payment_status or '—' }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted" style="text-align:center; padding:2rem;">No bookings yet.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

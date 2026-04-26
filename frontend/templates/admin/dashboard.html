@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard — Transport Enquiry{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>🛠️ Admin Dashboard</h1>
+  <p>System overview at a glance.</p>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.users }}</div>
+    <div class="stat-label">Registered Users</div>
+  </div>
+  <div class="stat-card orange">
+    <div class="stat-value">{{ stats.bookings }}</div>
+    <div class="stat-label">Total Bookings</div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-value">₹{{ '%.0f'|format(stats.revenue) }}</div>
+    <div class="stat-label">Revenue Collected</div>
+  </div>
+  <div class="stat-card red">
+    <div class="stat-value">{{ stats.pending }}</div>
+    <div class="stat-label">Pending Payments</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.routes }}</div>
+    <div class="stat-label">Routes</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.schedules }}</div>
+    <div class="stat-label">Schedules</div>
+  </div>
+</div>
+
+<div class="action-grid" style="margin-bottom:1.5rem;">
+  <div class="action-card"><div class="ac-icon">🎫</div>
+    <a href="{{ url_for('admin_bookings') }}">All Bookings</a></div>
+  <div class="action-card"><div class="ac-icon">🗺️</div>
+    <a href="{{ url_for('admin_routes') }}">Manage Routes</a></div>
+  <div class="action-card"><div class="ac-icon">🚌</div>
+    <a href="{{ url_for('admin_transports') }}">Manage Transports</a></div>
+  <div class="action-card"><div class="ac-icon">📅</div>
+    <a href="{{ url_for('admin_schedules') }}">Manage Schedules</a></div>
+  <div class="action-card"><div class="ac-icon">💳</div>
+    <a href="{{ url_for('admin_payments') }}">Payments</a></div>
+  <div class="action-card"><div class="ac-icon">👥</div>
+    <a href="{{ url_for('admin_users') }}">Users</a></div>
+</div>
+
+{% if recent %}
+<div class="card">
+  <h2>Recent Bookings</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>#</th><th>User</th><th>Route</th><th>Date</th><th>Seat</th><th>Payment</th></tr>
+      </thead>
+      <tbody>
+        {% for b in recent %}
+        <tr>
+          <td>{{ b.booking_id }}</td>
+          <td>{{ b.first_name }} {{ b.last_name }}</td>
+          <td>{{ b.source }} → {{ b.destination }}</td>
+          <td>{{ b.date }}</td>
+          <td><strong>{{ b.seat_number }}</strong></td>
+          <td>
+            {% if b.payment_status == 'Completed' %}
+              <span class="badge badge-green">Completed</span>
+            {% elif b.payment_status == 'Pending' %}
+              <span class="badge badge-orange">Pending</span>
+            {% else %}
+              <span class="badge badge-gray">{{ b.payment_status or '—' }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

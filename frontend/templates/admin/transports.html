@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Manage Transports — Admin{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>🚌 Manage Transports</h1>
+</div>
+
+<div class="two-col">
+  <div class="card">
+    <h2>Add New Transport</h2>
+    <form method="POST" action="{{ url_for('admin_add_transport') }}">
+      <div class="form-group">
+        <label for="transport_type">Transport Type</label>
+        <input type="text" id="transport_type" name="transport_type" required placeholder="Bus / Train / Metro">
+      </div>
+      <div class="form-group">
+        <label for="capacity">Capacity (seats)</label>
+        <input type="number" id="capacity" name="capacity" required min="1" placeholder="50">
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Add Transport</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>All Transports ({{ transports|length }})</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Type</th><th>Capacity</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          {% for t in transports %}
+          <tr>
+            <td>{{ t.transport_id }}</td>
+            <td>{{ t.transport_type }}</td>
+            <td>{{ t.capacity }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('admin_delete_transport', tid=t.transport_id) }}"
+                    class="inline-form"
+                    onsubmit="return confirm('Delete transport #{{ t.transport_id }}?');">
+                <button type="submit" class="btn btn-red btn-sm">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-muted">No transports found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

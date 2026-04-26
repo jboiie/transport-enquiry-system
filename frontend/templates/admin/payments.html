@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Payments — Admin{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>💳 Payment Records</h1>
+  <p>{{ payments|length }} payment record(s).</p>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    {% if payments %}
+    <table>
+      <thead>
+        <tr>
+          <th>Pay #</th><th>Booking #</th><th>User</th><th>Route</th>
+          <th>Seat</th><th>Date</th><th>Amount</th><th>Mode</th><th>Status</th><th>Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in payments %}
+        <tr>
+          <td>{{ p.payment_id }}</td>
+          <td>{{ p.booking_id }}</td>
+          <td>{{ p.first_name }} {{ p.last_name }}</td>
+          <td>{{ p.source }} → {{ p.destination }}</td>
+          <td>{{ p.seat_number }}</td>
+          <td>{{ p.date }}</td>
+          <td><strong>₹{{ '%.2f'|format(p.amount) }}</strong></td>
+          <td>{{ p.payment_mode }}</td>
+          <td>
+            {% if p.payment_status == 'Completed' %}
+              <span class="badge badge-green">Completed</span>
+            {% elif p.payment_status == 'Pending' %}
+              <span class="badge badge-orange">Pending</span>
+            {% else %}
+              <span class="badge badge-gray">{{ p.payment_status }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="POST" action="{{ url_for('admin_update_payment', payment_id=p.payment_id) }}"
+                  class="inline-form" style="display:flex; gap:.3rem;">
+              <select name="payment_status" style="padding:.25rem .4rem; font-size:.8rem; border-radius:4px; border:1px solid var(--border);">
+                <option value="Pending"   {% if p.payment_status=='Pending'   %}selected{% endif %}>Pending</option>
+                <option value="Completed" {% if p.payment_status=='Completed' %}selected{% endif %}>Completed</option>
+                <option value="Failed"    {% if p.payment_status=='Failed'    %}selected{% endif %}>Failed</option>
+              </select>
+              <button type="submit" class="btn btn-primary btn-sm">Save</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted" style="text-align:center; padding:2rem;">No payment records.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

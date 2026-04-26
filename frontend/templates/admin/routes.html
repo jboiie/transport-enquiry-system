@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Manage Routes — Admin{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>🗺️ Manage Routes</h1>
+</div>
+
+<div class="two-col">
+  <!-- Add Route Form -->
+  <div class="card">
+    <h2>Add New Route</h2>
+    <form method="POST" action="{{ url_for('admin_add_route') }}">
+      <div class="form-group">
+        <label for="source">Source City</label>
+        <input type="text" id="source" name="source" required placeholder="e.g. Chennai">
+      </div>
+      <div class="form-group">
+        <label for="destination">Destination City</label>
+        <input type="text" id="destination" name="destination" required placeholder="e.g. Bangalore">
+      </div>
+      <div class="form-group">
+        <label for="distance">Distance (km)</label>
+        <input type="number" id="distance" name="distance" required min="1" step="0.01" placeholder="350">
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Add Route</button>
+    </form>
+  </div>
+
+  <!-- Routes Table -->
+  <div class="card">
+    <h2>All Routes ({{ routes|length }})</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Source</th><th>Destination</th><th>Distance</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          {% for r in routes %}
+          <tr>
+            <td>{{ r.route_id }}</td>
+            <td>{{ r.source }}</td>
+            <td>{{ r.destination }}</td>
+            <td>{{ r.distance }} km</td>
+            <td>
+              <form method="POST" action="{{ url_for('admin_delete_route', route_id=r.route_id) }}"
+                    class="inline-form"
+                    onsubmit="return confirm('Delete route {{ r.source }} → {{ r.destination }}? This will also remove related schedules and bookings.');">
+                <button type="submit" class="btn btn-red btn-sm">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="text-muted">No routes found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
