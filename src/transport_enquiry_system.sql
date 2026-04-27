@@ -17,6 +17,7 @@ CREATE TABLE ENQUIRY (
     user_id INT,
     enquiry_number INT,
     enquiry_date DATE,
+    enquiry_text TEXT,
     status VARCHAR(50),
     PRIMARY KEY (user_id, enquiry_number),
     FOREIGN KEY (user_id) REFERENCES USER(user_id)

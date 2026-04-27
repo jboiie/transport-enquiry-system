@@ -12,10 +12,11 @@
     <h2>Submit New Enquiry</h2>
     <p class="text-muted mb-1">Our team will review your enquiry and update its status shortly.</p>
     <form method="POST" action="{{ url_for('user_enquiry') }}">
-      <p style="font-size:.9rem; margin-bottom:1rem;">
-        Click below to lodge a new enquiry. A ticket will be created automatically with today's date.
-      </p>
-      <button type="submit" class="btn btn-primary btn-full">Submit Enquiry</button>
+      <div class="form-group">
+        <label for="enquiry_text">Your Message/Query</label>
+        <textarea name="enquiry_text" id="enquiry_text" rows="4" required placeholder="Describe your issue or question..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full mt-1">Submit Enquiry</button>
     </form>
   </div>
 
@@ -25,13 +26,14 @@
     <div class="table-wrap">
       <table>
         <thead>
-          <tr><th>#</th><th>Date</th><th>Status</th></tr>
+          <tr><th>#</th><th>Date</th><th>Message</th><th>Status</th></tr>
         </thead>
         <tbody>
           {% for e in enquiries %}
           <tr>
             <td>{{ e.enquiry_number }}</td>
             <td>{{ e.enquiry_date }}</td>
+            <td>{{ e.enquiry_text or '—' }}</td>
             <td>
               {% if e.status == 'Resolved' %}
                 <span class="badge badge-green">Resolved</span>

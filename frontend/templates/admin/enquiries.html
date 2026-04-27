@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Manage Enquiries — Admin Portal{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>💬 All User Enquiries</h1>
+  <p>View and manage questions submitted by users.</p>
+</div>
+
+<div class="card">
+  <h2>Enquiry Inbox</h2>
+  {% if enquiries %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Date</th>
+          <th>Ticket #</th>
+          <th style="width: 45%;">Message</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in enquiries %}
+        <tr>
+          <td>
+            <strong>{{ e.first_name }} {{ e.last_name }}</strong><br>
+            <small class="text-muted">{{ e.email }}</small>
+          </td>
+          <td>{{ e.enquiry_date }}</td>
+          <td>#{{ e.enquiry_number }}</td>
+          <td><p style="white-space: pre-wrap; margin: 0; font-size: .88rem; line-height: 1.4;">{{ e.enquiry_text or '—' }}</p></td>
+          <td>
+            <form action="{{ url_for('admin_update_enquiry', user_id=e.user_id, enquiry_number=e.enquiry_number) }}" method="POST" class="inline-form" style="display:flex; gap:0.25rem;">
+              <select name="status" style="padding: 0.25rem; font-size: 0.85rem; width: auto; min-width: 100px;">
+                <option value="Open" {% if e.status == 'Open' %}selected{% endif %}>Open</option>
+                <option value="In Progress" {% if e.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                <option value="Resolved" {% if e.status == 'Resolved' %}selected{% endif %}>Resolved</option>
+              </select>
+              <button type="submit" class="btn btn-sm btn-primary">Update</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-muted">No enquiries have been submitted yet.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

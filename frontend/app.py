@@ -303,13 +303,14 @@ def user_enquiry():
     uid = session['user_id']
     conn = get_db(); cur = conn.cursor(dictionary=True)
     if request.method == 'POST':
+        text = request.form.get('enquiry_text', '').strip()
         cur.execute(
             "SELECT COALESCE(MAX(enquiry_number),0)+1 AS n FROM ENQUIRY WHERE user_id=%s", (uid,))
         nxt = cur.fetchone()['n']
         try:
             cur.execute(
-                "INSERT INTO ENQUIRY (user_id,enquiry_number,enquiry_date,status) VALUES (%s,%s,%s,'Open')",
-                (uid, nxt, date.today().isoformat()))
+                "INSERT INTO ENQUIRY (user_id,enquiry_number,enquiry_date,enquiry_text,status) VALUES (%s,%s,%s,%s,'Open')",
+                (uid, nxt, date.today().isoformat(), text))
             conn.commit()
             flash('Enquiry submitted!', 'success')
         except mysql.connector.Error as e:
@@ -320,6 +321,40 @@ def user_enquiry():
     cur.close(); conn.close()
     return render_template('user/enquiry.html', enquiries=enquiries)
 
+
+# ──────────────────────────────────────────────────────────────
+# Admin — Enquiries
+# ──────────────────────────────────────────────────────────────
+
+@app.route('/admin/enquiries')
+@admin_required
+def admin_enquiries():
+    conn = get_db(); cur = conn.cursor(dictionary=True)
+    cur.execute("""
+        SELECT e.user_id, e.enquiry_number, e.enquiry_date, e.enquiry_text, e.status,
+               u.first_name, u.last_name, u.email
+        FROM ENQUIRY e
+        JOIN USER u ON e.user_id = u.user_id
+        ORDER BY e.enquiry_date DESC, e.enquiry_number DESC
+    """)
+    enquiries = cur.fetchall()
+    cur.close(); conn.close()
+    return render_template('admin/enquiries.html', enquiries=enquiries)
+
+@app.route('/admin/enquiries/update/<int:user_id>/<int:enquiry_number>', methods=['POST'])
+@admin_required
+def admin_update_enquiry(user_id, enquiry_number):
+    new_status = request.form.get('status', 'Open')
+    conn = get_db(); cur = conn.cursor()
+    try:
+        cur.execute("UPDATE ENQUIRY SET status=%s WHERE user_id=%s AND enquiry_number=%s",
+                    (new_status, user_id, enquiry_number))
+        conn.commit(); flash('Enquiry status updated.', 'success')
+    except mysql.connector.Error as e:
+        conn.rollback(); flash(f"Error: {e.msg}", 'error')
+    finally:
+        cur.close(); conn.close()
+    return redirect(url_for('admin_enquiries'))
 
 # ──────────────────────────────────────────────────────────────
 # Admin — Auth
@@ -361,7 +396,7 @@ def admin_dashboard():
         'revenue':   count("SELECT COALESCE(SUM(amount),0) c FROM PAYMENT WHERE payment_status='Completed'")['c'],
         'pending':   count("SELECT COUNT(*) c FROM PAYMENT WHERE payment_status='Pending'")['c'],
         'routes':    count("SELECT COUNT(*) c FROM ROUTE")['c'],
-        'schedules': count("SELECT COUNT(*) c FROM SCHEDULE")['c'],
+        'open_enquiries': count("SELECT COUNT(*) c FROM ENQUIRY WHERE status='Open'")['c'],
     }
     cur.execute("""
         SELECT b.booking_id, u.first_name, u.last_name,

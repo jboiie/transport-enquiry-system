@@ -32,6 +32,10 @@
     <div class="stat-value">{{ stats.schedules }}</div>
     <div class="stat-label">Schedules</div>
   </div>
+  <div class="stat-card orange">
+    <div class="stat-value">{{ stats.open_enquiries }}</div>
+    <div class="stat-label">Open Enquiries</div>
+  </div>
 </div>
 
 <div class="action-grid" style="margin-bottom:1.5rem;">
@@ -45,6 +49,8 @@
     <a href="{{ url_for('admin_schedules') }}">Manage Schedules</a></div>
   <div class="action-card"><div class="ac-icon">💳</div>
     <a href="{{ url_for('admin_payments') }}">Payments</a></div>
+  <div class="action-card"><div class="ac-icon">💬</div>
+    <a href="{{ url_for('admin_enquiries') }}">Enquiries</a></div>
   <div class="action-card"><div class="ac-icon">👥</div>
     <a href="{{ url_for('admin_users') }}">Users</a></div>
 </div>
