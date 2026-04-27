@@ -1,80 +1,90 @@
 {% extends 'base.html' %}
-{% block title %}My Dashboard — Transport Enquiry{% endblock %}
+{% block title %}Book Trip — TrasportSys{% endblock %}
 {% block content %}
 
-<div class="page-header">
-  <h1>Welcome, {{ session.user_name }}! 👋</h1>
-  <p>Here's a snapshot of your activity.</p>
-</div>
+<!-- Title above the card in the teal banner area -->
+<h1 style="color:var(--white); font-size:1.3rem; margin-bottom:1rem; font-weight:600;">Booking form</h1>
 
-<div class="stat-grid">
-  <div class="stat-card">
-    <div class="stat-value">{{ booking_count }}</div>
-    <div class="stat-label">Total Bookings</div>
-  </div>
-  <div class="stat-card red">
-    <div class="stat-value">{{ pending_count }}</div>
-    <div class="stat-label">Pending Payments</div>
-  </div>
-  <div class="stat-card orange">
-    <div class="stat-value">{{ enquiry_count }}</div>
-    <div class="stat-label">Enquiries</div>
-  </div>
-</div>
+<div class="dash-grid" style="grid-template-columns: 1fr; max-width: 600px; margin: 0 auto;">
+  <!-- LEFT COLUMN: Booking Form & Recent Trips -->
+  <div class="left-col">
+    <div class="ui-card" style="padding-bottom:1rem;">
+      <form action="{{ url_for('user_routes') }}" method="GET">
+        <!-- From / To Row -->
+        <div class="form-grid" style="margin-bottom:1.5rem;">
+          <div>
+            <label>From</label>
+            <div class="input-with-icon">
+              <span class="icon">🔍</span>
+              <select name="source" class="ui-input">
+                <option value="">Any Location</option>
+                {% for s in sources %}
+                  <option value="{{ s }}">{{ s }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label>To</label>
+            <div class="input-with-icon">
+              <span class="icon">🔍</span>
+              <select name="destination" class="ui-input">
+                <option value="">Any Location</option>
+                {% for d in destinations %}
+                  <option value="{{ d }}">{{ d }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="swap-btn">⇄</div>
+        </div>
 
-<div class="action-grid" style="margin-bottom:1.5rem;">
-  <div class="action-card">
-    <div class="ac-icon">🗺️</div>
-    <a href="{{ url_for('user_routes') }}">Browse Routes</a>
-    <p class="text-muted mt-1">Find &amp; book a journey</p>
-  </div>
-  <div class="action-card">
-    <div class="ac-icon">🎫</div>
-    <a href="{{ url_for('user_bookings') }}">My Bookings</a>
-    <p class="text-muted mt-1">View or cancel bookings</p>
-  </div>
-  <div class="action-card">
-    <div class="ac-icon">💬</div>
-    <a href="{{ url_for('user_enquiry') }}">Enquiries</a>
-    <p class="text-muted mt-1">Submit or track enquiries</p>
-  </div>
-</div>
+        <!-- Search Button -->
+        <button type="submit" class="btn-primary-new">SEARCH ROUTES</button>
+      </form>
 
-{% if recent %}
-<div class="card">
-  <h2>Recent Bookings</h2>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>#</th><th>Route</th><th>Travel Date</th><th>Seat</th><th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for b in recent %}
-        <tr>
-          <td>{{ b.booking_id }}</td>
-          <td>{{ b.source }} → {{ b.destination }}</td>
-          <td>{{ b.date }}</td>
-          <td><strong>{{ b.seat_number }}</strong></td>
-          <td>
-            {% if b.payment_status == 'Completed' %}
-              <span class="badge badge-green">Completed</span>
-            {% elif b.payment_status == 'Pending' %}
-              <span class="badge badge-orange">Pending</span>
-            {% else %}
-              <span class="badge badge-gray">{{ b.payment_status or 'N/A' }}</span>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+      <!-- Recent Trips -->
+      <div style="margin-top: 2rem;">
+        <div class="section-title">
+          Recent Trips
+          <a href="{{ url_for('user_bookings') }}" class="view-all">View all</a>
+        </div>
+        
+        <div class="recent-trips">
+          {% if recent %}
+            {% for r in recent[:3] %}
+              <div class="trip-card">
+                <div class="trip-card-title">
+                  <span class="trip-dot teal"></span>
+                  {{ r.source }} to {{ r.destination }}
+                </div>
+                <div class="trip-date">{{ r.date }}</div>
+                <div class="trip-cost">
+                  <span>Seat:<br><strong>{{ r.seat_number }}</strong></span>
+                  <span>Status<br><strong>{{ r.payment_status or 'Pending' }}</strong></span>
+                </div>
+                <a href="{{ url_for('user_routes', source=r.source, destination=r.destination) }}" style="display:block; text-align:center;" class="btn-rebook">Rebook</a>
+              </div>
+            {% endfor %}
+          {% else %}
+            <!-- Mock Recent Trips if DB is empty to match design -->
+            <div class="trip-card">
+              <div class="trip-card-title"><span class="trip-dot teal"></span> Delhi to Mumbai</div>
+              <div class="trip-date">Aug 13, 2024</div>
+              <div class="trip-cost"><span>Cost:<br><strong>₹1200</strong></span><span>From<br><strong>₹800</strong></span></div>
+              <a href="{{ url_for('user_routes') }}" style="display:block; text-align:center;" class="btn-rebook">Rebook</a>
+            </div>
+            <div class="trip-card">
+              <div class="trip-card-title"><span class="trip-dot orange"></span> Chennai to Bangalore</div>
+              <div class="trip-date">Aug 13, 2024</div>
+              <div class="trip-cost"><span>Cost:<br><strong>₹800</strong></span><span>From<br><strong>₹500</strong></span></div>
+              <a href="{{ url_for('user_routes') }}" style="display:block; text-align:center;" class="btn-rebook">Rebook</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
   </div>
-  <p class="text-muted" style="margin-top:.75rem;">
-    <a href="{{ url_for('user_bookings') }}">View all bookings →</a>
-  </p>
 </div>
-{% endif %}
 
 {% endblock %}

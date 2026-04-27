@@ -14,7 +14,7 @@
       <thead>
         <tr>
           <th>#</th><th>User</th><th>Email</th><th>Route</th><th>Date</th>
-          <th>Seat</th><th>Booked On</th><th>Fare</th><th>Mode</th><th>Status</th>
+          <th>Seat</th><th>Booked On</th><th>Fare</th><th>Mode</th><th>Status</th><th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -37,6 +37,11 @@
             {% else %}
               <span class="badge badge-gray">{{ b.payment_status or '—' }}</span>
             {% endif %}
+          </td>
+          <td>
+            <form action="{{ url_for('admin_delete_booking', booking_id=b.booking_id) }}" method="POST" onsubmit="return confirm('Delete this booking?');">
+              <button type="submit" class="btn btn-sm badge-red" style="cursor:pointer; border:none; color:var(--white); background:var(--red);">Delete</button>
+            </form>
           </td>
         </tr>
         {% endfor %}

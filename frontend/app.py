@@ -153,13 +153,24 @@ def user_dashboard():
         LEFT JOIN PAYMENT p ON p.booking_id=b.booking_id
         WHERE b.user_id=%s ORDER BY b.booking_id DESC LIMIT 3""", (uid,))
     recent = cur.fetchall()
+    cur.execute("SELECT DISTINCT source FROM ROUTE ORDER BY source")
+    sources = [r['source'] for r in cur.fetchall()]
+    cur.execute("SELECT DISTINCT destination FROM ROUTE ORDER BY destination")
+    destinations = [r['destination'] for r in cur.fetchall()]
+    
     cur.close(); conn.close()
     return render_template('user/dashboard.html',
                            booking_count=booking_count,
                            pending_count=pending_count,
                            enquiry_count=enquiry_count,
-                           recent=recent)
+                           recent=recent,
+                           sources=sources,
+                           destinations=destinations)
 
+@app.route('/user/account')
+@login_required
+def user_account():
+    return render_template('user/account.html')
 
 # ──────────────────────────────────────────────────────────────
 # User — Browse Routes / Schedules
@@ -396,6 +407,7 @@ def admin_dashboard():
         'revenue':   count("SELECT COALESCE(SUM(amount),0) c FROM PAYMENT WHERE payment_status='Completed'")['c'],
         'pending':   count("SELECT COUNT(*) c FROM PAYMENT WHERE payment_status='Pending'")['c'],
         'routes':    count("SELECT COUNT(*) c FROM ROUTE")['c'],
+        'schedules': count("SELECT COUNT(*) c FROM SCHEDULE")['c'],
         'open_enquiries': count("SELECT COUNT(*) c FROM ENQUIRY WHERE status='Open'")['c'],
     }
     cur.execute("""
@@ -434,6 +446,22 @@ def admin_bookings():
     bookings = cur.fetchall()
     cur.close(); conn.close()
     return render_template('admin/bookings.html', bookings=bookings)
+
+@app.route('/admin/booking/delete/<int:booking_id>', methods=['POST'])
+@admin_required
+def admin_delete_booking(booking_id):
+    conn = get_db(); cur = conn.cursor()
+    try:
+        cur.execute("DELETE FROM BOOKING WHERE booking_id=%s", (booking_id,))
+        conn.commit()
+        flash('Booking deleted.', 'success')
+    except mysql.connector.Error as e:
+        conn.rollback(); flash(f"Error: {e.msg}", 'error')
+    finally:
+        cur.close(); conn.close()
+    return redirect(url_for('admin_bookings'))
+
+
 
 
 # ──────────────────────────────────────────────────────────────
@@ -640,6 +668,21 @@ def admin_users():
     users = cur.fetchall()
     cur.close(); conn.close()
     return render_template('admin/users.html', users=users)
+
+@app.route('/admin/user/delete/<int:user_id>', methods=['POST'])
+@admin_required
+def admin_delete_user(user_id):
+    conn = get_db(); cur = conn.cursor()
+    try:
+        cur.execute("DELETE FROM BOOKING WHERE user_id=%s", (user_id,))
+        cur.execute("DELETE FROM USER WHERE user_id=%s", (user_id,))
+        conn.commit()
+        flash('User deleted.', 'success')
+    except mysql.connector.Error as e:
+        conn.rollback(); flash(f"Error: {e.msg}", 'error')
+    finally:
+        cur.close(); conn.close()
+    return redirect(url_for('admin_users'))
 
 
 # ──────────────────────────────────────────────────────────────

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}My Account — TrasportSys{% endblock %}
+{% block content %}
+
+<div class="ui-card" style="max-width:800px; margin:0 auto; margin-top:2rem;">
+  <div class="section-title">My Account</div>
+  <p class="text-muted" style="margin-bottom:2rem;">Welcome back, {{ session.user_name }}. Manage your trips and support tickets here.</p>
+  
+  <div class="action-grid">
+    <div class="action-card" style="border-top:3px solid var(--orange);">
+      <div class="ac-icon">🎫</div>
+      <a href="{{ url_for('user_bookings') }}">My Bookings</a>
+      <p class="text-muted mt-1" style="font-size:0.8rem;">View and manage your upcoming or past trips.</p>
+    </div>
+    
+    <div class="action-card" style="border-top:3px solid var(--teal);">
+      <div class="ac-icon">💬</div>
+      <a href="{{ url_for('user_enquiry') }}">Support / Enquiries</a>
+      <p class="text-muted mt-1" style="font-size:0.8rem;">Need help? Contact support or track existing tickets.</p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

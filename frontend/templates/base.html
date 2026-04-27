@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Transport Enquiry System{% endblock %}</title>
+  <title>{% block title %}TrasportSys{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-<nav>
-  <a class="nav-brand" href="{{ url_for('index') }}">🚌 <span>Transport</span> Enquiry</a>
+<header class="top-nav">
+  <a class="nav-brand" href="{{ url_for('index') }}">
+    <span class="nav-brand-icon">T></span> TrasportSys
+  </a>
   <div class="nav-links">
     {% if session.get('user_id') %}
-      <a href="{{ url_for('user_dashboard') }}">Dashboard</a>
-      <a href="{{ url_for('user_routes') }}">Browse Routes</a>
-      <a href="{{ url_for('user_bookings') }}">My Bookings</a>
-      <a href="{{ url_for('user_enquiry') }}">Enquiries</a>
-      <a href="{{ url_for('user_logout') }}" class="btn-logout">Logout ({{ session.user_name }})</a>
+      <a href="{{ url_for('user_dashboard') }}">Book Trip</a>
+      <a href="{{ url_for('user_account') }}">Account</a>
     {% elif session.get('is_admin') %}
       <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
       <a href="{{ url_for('admin_bookings') }}">Bookings</a>
@@ -26,15 +26,26 @@
       <a href="{{ url_for('admin_payments') }}">Payments</a>
       <a href="{{ url_for('admin_enquiries') }}">Enquiries</a>
       <a href="{{ url_for('admin_users') }}">Users</a>
-      <a href="{{ url_for('admin_logout') }}" class="btn-logout">Logout</a>
     {% else %}
-      <a href="{{ url_for('user_login') }}">User Portal</a>
-      <a href="{{ url_for('admin_login') }}">Admin Portal</a>
+      <a href="{{ url_for('user_login') }}">Login</a>
+      <a href="{{ url_for('admin_login') }}">Admin</a>
     {% endif %}
   </div>
-</nav>
+  <div class="nav-right">
+    {% if session.get('user_id') %}
+      <span style="color:var(--text-muted); cursor:pointer;">🔔</span>
+      <div class="profile-pic">{{ session.user_name[0]|upper }}</div>
+      <a href="{{ url_for('user_logout') }}" style="font-size:0.85rem; color:var(--text-muted); margin-left:0.5rem;">Logout</a>
+    {% elif session.get('is_admin') %}
+      <div class="profile-pic">A</div>
+      <a href="{{ url_for('admin_logout') }}" style="font-size:0.85rem; color:var(--text-muted); margin-left:0.5rem;">Logout</a>
+    {% endif %}
+  </div>
+</header>
 
-<div class="page-wrap">
+<div class="hero-banner"></div>
+
+<div class="page-container">
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       <ul class="flashes">
@@ -47,6 +58,19 @@
 
   {% block content %}{% endblock %}
 </div>
+
+<footer class="footer">
+  <div class="footer-links">
+    <a href="#">About Us</a>
+    <a href="#">Help Center</a>
+    <a href="#">Terms of Service</a>
+  </div>
+  <div class="footer-social">
+    <span style="cursor:pointer;">f</span>
+    <span style="cursor:pointer; margin:0 1rem;">▶</span>
+    <span style="cursor:pointer;">📷</span>
+  </div>
+</footer>
 
 </body>
 </html>
